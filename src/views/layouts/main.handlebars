@@ -1,14 +1,20 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="es">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Servicios</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; background: #f5f7fb; color: #1b1b1b; }
+      h1 { margin-bottom: 1rem; }
+      .card { background: white; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 1rem; }
+      ul { list-style: none; padding: 0; }
+      li { padding: 0.4rem 0; border-bottom: 1px solid #e5e7eb; }
+      a { color: #1d4ed8; text-decoration: none; }
+    </style>
   </head>
   <body>
     {{{body}}}
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/socket.js"></script>
   </body>
 </html>

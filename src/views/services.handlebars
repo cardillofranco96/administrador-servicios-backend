@@ -1,10 +1,18 @@
-<h1>Servicios</h1>
-<a href="/views/availability">Ver reservas</a>
-<ul id="services-list">
-  {{#each services}}
-    <li data-id="{{id}}">
-      <strong>{{name}}</strong> - {{description}}<br>
-      Duración: {{duration}} min · Precio: ${{price}} · Categoría: {{category}} · Disponible: {{available}}
-    </li>
-  {{/each}}
-</ul>
+<div class="card">
+  <h1>{{title}}</h1>
+  {{#if services.length}}
+    <ul>
+      {{#each services}}
+        <li>
+          <strong>{{this.name}}</strong> - {{this.category}}<br>
+          {{this.description}}<br>
+          Duración: {{this.duration}} min | Precio: ${{this.price}}
+        </li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <p>No hay servicios disponibles.</p>
+  {{/if}}
+
+  <p><a href="/">Volver al inicio</a></p>
+</div>

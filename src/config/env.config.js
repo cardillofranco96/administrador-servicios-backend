@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const requiredEnv = ['PORT', 'NODE_ENV'];
+const requiredEnv = ['PORT', 'NODE_ENV', 'MONGODB_URI'];
 
 function validateEnvironment() {
   for (const key of requiredEnv) {
@@ -15,8 +15,9 @@ function validateEnvironment() {
 validateEnvironment();
 
 export const config = {
-  PORT: process.env.PORT,
-  NODE_ENV: process.env.NODE_ENV
+  PORT: Number(process.env.PORT) || 8080,
+  NODE_ENV: process.env.NODE_ENV,
+  MONGODB_URI: process.env.MONGODB_URI
 };
 
 // Optional MongoDB URI (only used if provided)

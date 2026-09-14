@@ -1,0 +1,11 @@
+[
+  {
+    "id": 1,
+    "name": "Desarrollo Web Premium",
+    "description": "Landing page con estrategia SEO y optimización.",
+    "duration": 180,
+    "price": 3200,
+    "category": "Web",
+    "available": false
+  }
+]

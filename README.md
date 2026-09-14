@@ -82,6 +82,20 @@ npm start
 npm run dev
 ```
 
+## Configuración de GitHub y repositorio
+
+Este proyecto debe quedar asociado a la cuenta de GitHub `cardillofranco96` y no a otra cuenta. El remoto correcto es:
+
+```bash
+git@github.com:cardillofranco96/administrador-servicios-backend.git
+```
+
+Si tu entorno no tiene SSH configurado, puedes usar HTTPS en lugar de SSH:
+
+```bash
+https://github.com/cardillofranco96/administrador-servicios-backend.git
+```
+
 ## Uso del gestor `ServiceManager`
 
 ### Importación

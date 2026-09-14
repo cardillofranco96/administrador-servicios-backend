@@ -7,5 +7,14 @@
     "price": 3200,
     "category": "Web",
     "available": false
+  },
+  {
+    "id": 2,
+    "name": "Desarrollo Web",
+    "description": "Landing page y sitio corporativo.",
+    "duration": 120,
+    "price": 2500,
+    "category": "Web",
+    "available": true
   }
 ]

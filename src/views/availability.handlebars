@@ -1,0 +1,14 @@
+<h1>Reservas</h1>
+<a href="/views/services">Ver servicios</a>
+<ul id="bookings-list">
+  {{#each bookings}}
+    <li>
+      <strong>{{clientName}} ({{clientEmail}})</strong> - {{date}} {{time}} - {{status}}
+      <ul>
+        {{#each services}}
+          <li>Servicio: {{#if service.name}}{{service.name}}{{else}}{{service}}{{/if}} · Cantidad: {{quantity}}</li>
+        {{/each}}
+      </ul>
+    </li>
+  {{/each}}
+</ul>

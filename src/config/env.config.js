@@ -18,3 +18,6 @@ export const config = {
   PORT: process.env.PORT,
   NODE_ENV: process.env.NODE_ENV
 };
+
+// Optional MongoDB URI (only used if provided)
+export const MONGO_URI = process.env.MONGO_URI || null;

@@ -1,43 +1,50 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dataFilePath = path.join(__dirname, '../data/services.json');
+import { ServiceModel } from '../models/service.model.js';
 
 export class ServiceManager {
-  async readServicesFile() {
-    try {
-      const content = await fs.readFile(dataFilePath, 'utf-8');
-      return JSON.parse(content);
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        await fs.writeFile(dataFilePath, '[]', 'utf-8');
-        return [];
-      }
-
-      throw error;
-    }
-  }
-
-  async writeServicesFile(services) {
-    await fs.writeFile(dataFilePath, JSON.stringify(services, null, 2), 'utf-8');
-  }
-
   async getServices() {
-    return await this.readServicesFile();
+    // legacy call without args
+    const docs = await ServiceModel.find().lean();
+    return { docs, meta: { total: docs.length, page: 1, limit: docs.length, totalPages: 1, hasPrevPage: false, hasNextPage: false } };
+  }
+
+  async getServices(options = {}) {
+    // options: { filters: {category, available}, page, limit, sortBy, order }
+    const { filters = {}, page = 1, limit = 10, sortBy = 'createdAt', order = 'desc' } = options;
+    const query = {};
+    if (filters.category) query.category = { $regex: new RegExp(`^${filters.category}$`, 'i') };
+    if (filters.available !== undefined && filters.available !== null && filters.available !== '') query.available = filters.available === 'true' || filters.available === true;
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const sortObj = { [sortBy]: order === 'asc' ? 1 : -1 };
+
+    const [docs, total] = await Promise.all([
+      ServiceModel.find(query).sort(sortObj).skip(skip).limit(Number(limit)).lean(),
+      ServiceModel.countDocuments(query)
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(total / Number(limit)));
+
+    return {
+      docs,
+      meta: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages,
+        hasPrevPage: Number(page) > 1,
+        hasNextPage: Number(page) < totalPages
+      }
+    };
   }
 
   async getServiceById(id) {
-    const services = await this.readServicesFile();
-    const service = services.find((item) => item.id === Number(id));
-
-    if (!service) {
+    try {
+      const doc = await ServiceModel.findById(id).lean();
+      if (!doc) return { error: `Servicio con id ${id} no encontrado.` };
+      return { ...doc };
+    } catch (err) {
       return { error: `Servicio con id ${id} no encontrado.` };
     }
-
-    return service;
   }
 
   async addService(serviceData) {
@@ -48,78 +55,54 @@ export class ServiceManager {
     });
 
     if (missingField) {
-      return {
-        error: `Falta el campo obligatorio: ${missingField}. Todos los campos deben estar presentes y no vacíos.`
-      };
+      return { error: `Falta el campo obligatorio: ${missingField}. Todos los campos deben estar presentes y no vacíos.` };
     }
 
-    const services = await this.readServicesFile();
-    const nextId = services.length > 0 ? Math.max(...services.map((service) => service.id)) + 1 : 1;
-
-    const newService = {
-      id: nextId,
+    const created = await ServiceModel.create({
       name: String(serviceData.name).trim(),
       description: String(serviceData.description).trim(),
       duration: Number(serviceData.duration),
       price: Number(serviceData.price),
       category: String(serviceData.category).trim(),
       available: Boolean(serviceData.available)
-    };
+    });
 
-    services.push(newService);
-    await this.writeServicesFile(services);
-
-    return newService;
+    return created.toJSON();
   }
 
   async updateService(id, updatedData) {
-    const services = await this.readServicesFile();
-    const index = services.findIndex((service) => service.id === Number(id));
+    try {
+      const doc = await ServiceModel.findById(id);
+      if (!doc) return { error: `Servicio con id ${id} no encontrado.` };
 
-    if (index === -1) {
-      return { error: `Servicio con id ${id} no encontrado.` };
-    }
+      const allowedFields = ['name', 'description', 'duration', 'price', 'category', 'available'];
 
-    const currentService = services[index];
-    const allowedFields = ['name', 'description', 'duration', 'price', 'category', 'available'];
+      for (const [key, value] of Object.entries(updatedData || {})) {
+        if (key === 'id') continue;
+        if (!allowedFields.includes(key)) continue;
+        if (value === undefined || value === null || value === '') continue;
 
-    const nextService = { ...currentService };
-
-    for (const [key, value] of Object.entries(updatedData || {})) {
-      if (key === 'id') {
-        continue;
-      }
-
-      if (allowedFields.includes(key)) {
-        if (value === undefined || value === null || value === '') {
-          continue;
-        }
-
-        nextService[key] = key === 'name' || key === 'description' || key === 'category'
+        doc[key] = key === 'name' || key === 'description' || key === 'category'
           ? String(value).trim()
           : key === 'available'
             ? Boolean(value)
             : Number(value);
       }
+
+      await doc.save();
+      return doc.toJSON();
+    } catch (err) {
+      return { error: `Servicio con id ${id} no encontrado.` };
     }
-
-    services[index] = nextService;
-    await this.writeServicesFile(services);
-
-    return nextService;
   }
 
   async deleteService(id) {
-    const services = await this.readServicesFile();
-    const index = services.findIndex((service) => service.id === Number(id));
-
-    if (index === -1) {
+    try {
+      const doc = await ServiceModel.findByIdAndDelete(id).lean();
+      if (!doc) return { error: `Servicio con id ${id} no encontrado.` };
+      return { ...doc };
+    } catch (err) {
       return { error: `Servicio con id ${id} no encontrado.` };
     }
-
-    const [deletedService] = services.splice(index, 1);
-    await this.writeServicesFile(services);
-
-    return deletedService;
   }
 }

@@ -1,18 +1,36 @@
-<div class="card">
-  <h1>{{title}}</h1>
-  {{#if services.length}}
-    <ul>
-      {{#each services}}
-        <li>
-          <strong>{{this.name}}</strong> - {{this.category}}<br>
-          {{this.description}}<br>
-          Duración: {{this.duration}} min | Precio: ${{this.price}}
-        </li>
-      {{/each}}
-    </ul>
-  {{else}}
-    <p>No hay servicios disponibles.</p>
-  {{/if}}
+<section class="card-section">
+  <div class="section-head">
+    <h2>{{title}}</h2>
+    <span>Servicios disponibles</span>
+  </div>
 
-  <p><a href="/">Volver al inicio</a></p>
-</div>
+  {{#if services.length}}
+    <div class="service-grid">
+      {{#each services}}
+        <article class="service-card">
+          <div class="badge">{{this.category}}</div>
+          <h3>{{this.name}}</h3>
+          <p>{{this.description}}</p>
+          <div class="meta">
+            <span>{{this.duration}} min</span>
+            <span class="price">$ {{this.price}}</span>
+          </div>
+        </article>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="empty-state">No hay servicios disponibles por el momento.</div>
+  {{/if}}
+</section>
+
+<section class="contact-card">
+  <div class="eyebrow">Contacto</div>
+  <h2>Necesitás ayuda técnica?</h2>
+  <p>
+    Desde soporte presencial, remoto, mantenimiento y configuración de redes, te ayudamos a resolverlo con rapidez.
+  </p>
+  <div class="socials">
+    <a href="https://www.linkedin.com/in/cardillofranco/" target="_blank" rel="noreferrer">LinkedIn</a>
+    <a href="https://github.com/cardillofranco96" target="_blank" rel="noreferrer">GitHub</a>
+  </div>
+</section>
